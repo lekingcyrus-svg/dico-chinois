@@ -64,7 +64,7 @@ const P={"横":"M3 12H21","竖":"M12 3V21","撇":"M18 4Q10 12 5 20","捺":"M5 5Q
 const ic=n=>`<svg viewBox="0 0 24 24"><path d="${P[n]||"M5 12H19"}"/></svg>`;
 function strokes(c){try{let r=cnchar.stroke(c,"order","name");if(Array.isArray(r[0]))r=r[0];return Array.isArray(r)?r:[]}catch(e){return[]}}
 
-function say(text,lang,rate){return new Promise(res=>{if(!window.speechSynthesis){res();return}
+function sayWeb(text,lang,rate){return new Promise(res=>{if(!window.speechSynthesis){res();return}
 const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=rate;
 const v=speechSynthesis.getVoices().find(v=>v.lang.replace("_","-").startsWith(lang));if(v)u.voice=v;
 u.onend=u.onerror=()=>res();speechSynthesis.speak(u)})}
@@ -90,7 +90,9 @@ const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",he
 const j=await resp.json();if(!resp.ok)throw new Error(j.error&&j.error.message||"erreur API");
 return JSON.parse(j.content.map(c=>c.text||"").join("").replace(/```json|```/g,"").trim()).entries.filter(e=>e&&e.zh)}
 
-let tk=0;const stop=()=>{tk++;if(window.speechSynthesis)speechSynthesis.cancel()};
+const CP=()=>(window.Capacitor&&Capacitor.Plugins)||{};
+function say(t,l,r){const P=CP().TextToSpeech;if(P)return P.speak({text:t,lang:l,rate:r,pitch:1,volume:1,queueStrategy:0}).catch(()=>{});return sayWeb(t,l,r)}
+let tk=0;const stop=()=>{tk++;const P=CP().TextToSpeech;if(P)P.stop().catch(()=>{});if(window.speechSynthesis)speechSynthesis.cancel()};
 async function speak(zh,f){stop();const t=tk,r=+LS.g("rate",.8);await say(zh,"zh-CN",r);if(t!=tk||!f)return;await wait(400);if(t==tk)await say(f,"fr-FR",1)}
 const LESSON="同学 朋友 什么 呢 老师 汉字 学生 中国 谁 名字 美国 吗".split(" "),WOTD=["你好","谢谢","再见",...LESSON];
 const first=g=>(g||"").split(/[;\/]/)[0].replace(/\(.*?\)/g,"").trim();
@@ -105,8 +107,10 @@ function back(){cur=stack.pop()||{v:"home"};draw()}
 function tab(v){stack=[];cur={v};draw()}
 function draw(){stop();W=null;$("#app").innerHTML=V[cur.v](cur.a);if(H[cur.v])H[cur.v](cur.a);scrollTo(0,0);
 const m={home:"home",dico:"dico",detail:"dico",prog:"prog",prof:"prof"}[cur.v];document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===m))}
-function bindSearch(inp,fn){inp.onkeydown=e=>{if(e.key==="Enter")fn(inp.value.trim())};const m=$("#mic"),R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){m.style.display="none";return}
-m.onclick=()=>{const r=new R();r.lang="fr-FR";r.onresult=e=>{inp.value=e.results[0][0].transcript;fn(inp.value.trim())};try{r.start()}catch(x){}}}
+function bindSearch(inp,fn){inp.onkeydown=e=>{if(e.key==="Enter")fn(inp.value.trim())};const m=$("#mic"),SR=CP().SpeechRecognition,R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR&&!R){m.style.display="none";return}
+m.onclick=async()=>{const lg=LS.g("dl","fr-FR");
+if(SR){try{const a=await SR.available();if(!a.available){m.style.display="none";return}const p=await SR.requestPermissions();if(p.speechRecognition!=="granted")return;const r=await SR.start({language:lg,maxResults:1,prompt:"Parle…",partialResults:false,popup:true});const t=r&&r.matches&&r.matches[0];if(t){inp.value=t;fn(t.trim())}}catch(e){}return}
+const r=new R();r.lang=lg;r.onresult=e=>{inp.value=e.results[0][0].transcript;fn(inp.value.trim())};try{r.start()}catch(x){}}}
 const SB=(id,v)=>`<div class="sb"><span>${I("search",22)}</span><input id="${id}" value="${esc(v||"")}" placeholder="Français, 中文 ou pinyin…" enterkeyhint="search"><button class="ic" id="mic">${I("mic",22)}</button></div>`;
 V.home=()=>{const w=WOTD[Math.floor(Date.now()/864e5)%WOTD.length],e=ent(w);
 const T6=[["book","Dictionnaire","go('dico')"],["cap","Apprendre","go('learn')"],["pencil","Exercices","go('train',[])"],["star","Favoris","go('favs')"],["history","Historique","go('hist')"],["chart","Progression","tab('prog')"]];
@@ -161,9 +165,10 @@ return `${hdr("Progression")}<div class="pg"><span>Leçon HSK 1</span><span>${pc
 <div class="stat"><span>Caractères écrits (total)</span><b>${p.n}</b></div><div class="stat"><span>Caractères différents</span><b>${Object.keys(p.c).length}</b></div><div class="stat"><span>Mots consultés</span><b>${LS.g("hist",[]).length}</b></div><div class="stat"><span>Favoris</span><b>${LS.g("fav",[]).length}</b></div>`};
 V.prof=()=>`${hdr("Profil")}<label class="set">Lecture automatique<input type="checkbox" id="au" ${LS.g("auto",true)?"checked":""}></label>
 <label class="set">Vitesse de lecture<input type="range" id="rt" min="0.5" max="1.1" step="0.1" value="${LS.g("rate",.8)}"></label>
+<label class="set">Langue de dictée<select class="in" id="dl"><option value="fr-FR">Français</option><option value="zh-CN">中文</option></select></label>
 <label class="set">Clé API (option en ligne)<input class="in" type="password" id="ky" value="${esc(LS.g("k",""))}" placeholder="sk-ant-…"></label>
 <button class="ghost" id="clr">Effacer l'historique</button><p class="mu">L'application fonctionne hors-ligne. La clé API sert uniquement à traduire des phrases entières quand tu es connecté.</p>`;
-H.prof=()=>{$("#au").onchange=e=>LS.s("auto",e.target.checked);$("#rt").onchange=e=>LS.s("rate",+e.target.value);$("#ky").onchange=e=>LS.s("k",e.target.value.trim());$("#clr").onclick=()=>{LS.s("hist",[]);$("#clr").textContent="Effacé ✓"}};
+H.prof=()=>{$("#dl").value=LS.g("dl","fr-FR");$("#dl").onchange=e=>LS.s("dl",e.target.value);$("#au").onchange=e=>LS.s("auto",e.target.checked);$("#rt").onchange=e=>LS.s("rate",+e.target.value);$("#ky").onchange=e=>LS.s("k",e.target.value.trim());$("#clr").onclick=()=>{LS.s("hist",[]);$("#clr").textContent="Effacé ✓"}};
 document.addEventListener("click",e=>{const d=e.target.closest("[data-d]");if(d){go("detail",d.dataset.d);return}const s=e.target.closest("[data-say]");if(s)speak(s.dataset.say,"")});
 $("#tabs").innerHTML=[["home","home","Accueil"],["dico","book","Dictionnaire"],["prog","chart","Progrès"],["prof","person","Profil"]].map(t=>`<button data-t="${t[0]}">${I(t[1],24)}${t[2]}</button>`).join("");document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
 draw();
