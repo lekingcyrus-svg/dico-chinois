@@ -43,14 +43,20 @@ button{font:inherit;color:inherit;cursor:pointer}
 .stat{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)}
 #tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:#101012;border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
 #tabs button{flex:1;background:none;border:0;padding:8px 0;font-size:11px;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px}
-#tabs button i{font-style:normal;font-size:20px}#tabs button.on{color:var(--rd)}
+#tabs button.on{color:var(--rd)}
 label.set{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}
 input.in{background:var(--cd);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:8px;width:55%}
+.i{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+.i .f{fill:currentColor;stroke:none}.i .r{stroke:#c8102e}.i .rf{fill:#c8102e;stroke:none}.i.fl{fill:#c8102e;stroke:#c8102e}
+.spk .i,.spk .i .f{color:#fff}.spk .i{stroke:#fff}.tile i{color:#fff;display:block;line-height:0}.sec .i{flex:none}
+#tabs .on .h{fill:currentColor}.red .i{stroke:#fff}.red .i .f{fill:#fff}.ic{color:#fff}.ghost .i,.red .i{margin-right:4px}
 </style></head><body>
-<div id="app"></div><nav id="tabs"><button data-t="home"><i>🏠</i>Accueil</button><button data-t="dico"><i>📖</i>Dictionnaire</button><button data-t="prog"><i>📊</i>Progrès</button><button data-t="prof"><i>👤</i>Profil</button></nav>
+<div id="app"></div><nav id="tabs"></nav>
 <script src="cnchar.min.js"></script><script src="cnchar.order.min.js"></script><script src="hanzi-writer.min.js"></script><script src="dict.js"></script>
 <script>
 const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const PA={search:'<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21"/>',mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',book:'<path d="M2 5c3-1 7-1 10 1v14c-3-2-7-2-10-1zM22 5c-3-1-7-1-10 1v14c3-2 7-2 10-1z"/>',cap:'<path d="M2 9l10-5 10 5-10 5zM6 11.5V16c3 2.5 9 2.5 12 0v-4.5M22 9v6"/>',pencil:'<path d="M5 17L16 6l3 3L8 20l-4 1z"/><path class="r" d="M4 23h9"/>',star:'<path d="M12 3l2.8 6 6.2.7-4.6 4.3 1.3 6.5L12 17.2 6.3 20.5l1.4-6.5L3 9.7 9.2 9z"/>',history:'<path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5M12 7v5l3 2"/>',chart:'<rect class="f" x="4" y="13" width="4" height="7" rx="1"/><rect class="f" x="10" y="9" width="4" height="11" rx="1"/><rect class="f" x="16" y="4" width="4" height="16" rx="1"/>',home:'<path class="h" d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/>',person:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',back:'<path d="M15 5l-7 7 7 7"/>',next:'<path d="M9 5l7 7-7 7"/>',spk:'<path class="f" d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9c1.5 1.5 1.5 4.5 0 6M18.5 7c3 3 3 7 0 10"/>',bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10c1 1 1 2 1 3h6c0-1 0-2 1-3a6 6 0 0 0-4-10z"/>',dots:'<g class="rf"><rect x="3" y="4" width="4" height="4"/><rect x="10" y="4" width="11" height="4"/><rect x="3" y="10" width="4" height="4"/><rect x="10" y="10" width="11" height="4"/><rect x="3" y="16" width="4" height="4"/><rect x="10" y="16" width="11" height="4"/></g>',play:'<path class="f" d="M7 5l12 7-12 7z"/>',refresh:'<path d="M20 12a8 8 0 1 1-3-6.2M20 4v5h-5"/>'};
+const I=(n,s=24,f)=>`<svg class="i${f?" fl":""}" width="${s}" height="${s}" viewBox="0 0 24 24">${PA[n]}</svg>`;
 const LS={g:(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const F={"横":"horizontal","竖":"vertical","撇":"barre gauche","捺":"barre droite","点":"point","提":"montant","折":"coude","钩":"crochet","弯":"courbe","斜":"oblique","卧":"couché"};
 const fr=n=>[...n].map(c=>F[c]||c).join("-");
@@ -90,7 +96,7 @@ const LESSON="同学 朋友 什么 呢 老师 汉字 学生 中国 谁 名字 �
 const first=g=>(g||"").split(/[;\/]/)[0].replace(/\(.*?\)/g,"").trim();
 const ent=zh=>{const a=typeof DICT!=="undefined"&&idx().m.get(zh);return a?toE(a[0]):{zh,pinyin:"",fr:"",note:"",words:[],examples:[]}};
 const row=(zh,e)=>`<button class="row" data-d="${esc(zh)}"><span class="rz">${esc(zh)}</span><span><b>${esc(e.pinyin)}</b><br><span class="mu">${esc(first(e.fr))}</span></span></button>`;
-const hdr=(t,r)=>`<div class="hd"><button class="ic" onclick="back()">‹</button><h2>${t}</h2><div>${r||"<span style='min-width:40px;display:inline-block'></span>"}</div></div>`;
+const hdr=(t,r)=>`<div class="hd"><button class="ic" onclick="back()">${I("back",26)}</button><h2>${t}</h2><div>${r||"<span style='min-width:40px;display:inline-block'></span>"}</div></div>`;
 const hwl=(c,ok,er)=>fetch("hw/"+encodeURIComponent(c)+".json").then(r=>{if(!r.ok)throw 0;return r.json()}).then(ok).catch(er);
 const isZ=c=>/[\u3400-\u9fff]/.test(c);
 let stack=[],cur={v:"home"},W=null,T=null;const V={},H={};
@@ -101,34 +107,34 @@ function draw(){stop();W=null;$("#app").innerHTML=V[cur.v](cur.a);if(H[cur.v])H[
 const m={home:"home",dico:"dico",detail:"dico",prog:"prog",prof:"prof"}[cur.v];document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===m))}
 function bindSearch(inp,fn){inp.onkeydown=e=>{if(e.key==="Enter")fn(inp.value.trim())};const m=$("#mic"),R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){m.style.display="none";return}
 m.onclick=()=>{const r=new R();r.lang="fr-FR";r.onresult=e=>{inp.value=e.results[0][0].transcript;fn(inp.value.trim())};try{r.start()}catch(x){}}}
-const SB=(id,v)=>`<div class="sb"><span>🔍</span><input id="${id}" value="${esc(v||"")}" placeholder="Français, 中文 ou pinyin…" enterkeyhint="search"><button class="ic" id="mic">🎤</button></div>`;
+const SB=(id,v)=>`<div class="sb"><span>${I("search",22)}</span><input id="${id}" value="${esc(v||"")}" placeholder="Français, 中文 ou pinyin…" enterkeyhint="search"><button class="ic" id="mic">${I("mic",22)}</button></div>`;
 V.home=()=>{const w=WOTD[Math.floor(Date.now()/864e5)%WOTD.length],e=ent(w);
-const T6=[["📖","Dictionnaire","go('dico')"],["🎓","Apprendre","go('learn')"],["✏️","Exercices","go('train',[])"],["⭐","Favoris","go('favs')"],["🕘","Historique","go('hist')"],["📊","Progression","tab('prog')"]];
+const T6=[["book","Dictionnaire","go('dico')"],["cap","Apprendre","go('learn')"],["pencil","Exercices","go('train',[])"],["star","Favoris","go('favs')"],["history","Historique","go('hist')"],["chart","Progression","tab('prog')"]];
 return `<div class="hero"><div class="seal">中<br>文</div><div><div class="logo">Dico<span>Chinois</span></div><div class="mu">Apprendre • Comprendre • Réussir</div></div></div>${SB("hq")}
-<div class="tiles">${T6.map(t=>`<button class="tile" onclick="${t[2]}"><i>${t[0]}</i>${t[1]}</button>`).join("")}</div>
-<button class="wod" data-d="${w}"><div><div class="mu">Mot du jour</div><div class="wz">${w}</div><div class="mu">${esc(e.pinyin)} • ${esc(first(e.fr))}</div></div><span>›</span></button>`};
+<div class="tiles">${T6.map(t=>`<button class="tile" onclick="${t[2]}"><i>${I(t[0],34)}</i>${t[1]}</button>`).join("")}</div>
+<button class="wod" data-d="${w}"><div><div class="mu">Mot du jour</div><div class="wz">${w}</div><div class="mu">${esc(e.pinyin)} • ${esc(first(e.fr))}</div></div><span>${I("next",22)}</span></button>`};
 H.home=()=>bindSearch($("#hq"),q=>q&&go("dico",q));
 V.dico=q=>`${hdr("Dictionnaire")}${SB("dq",q)}<div id="res"></div>`;
-function card(e){return `<div class="card"><div class="top"><div style="flex:1"><div class="rz" style="font-size:26px">${esc(e.zh)}</div><b>${esc(e.pinyin)}</b></div><button class="spk" data-say="${esc(e.zh)}">🔊</button></div><div style="margin-top:6px">${esc(e.fr)}</div>
+function card(e){return `<div class="card"><div class="top"><div style="flex:1"><div class="rz" style="font-size:26px">${esc(e.zh)}</div><b>${esc(e.pinyin)}</b></div><button class="spk" data-say="${esc(e.zh)}">${I("spk",20)}</button></div><div style="margin-top:6px">${esc(e.fr)}</div>
 ${(e.words||[]).length?`<div class="ws">${e.words.map(w=>`<div class="wd"><b>${esc(w.zh)}</b>${esc(w.pinyin)}<br>${esc(w.fr)}</div>`).join("")}</div>`:""}
-${(e.examples||[]).map(x=>`<div class="mu" style="margin-top:8px"><b style="color:var(--tx)">${esc(x.zh)}</b> <button class="ic" data-say="${esc(x.zh)}">🔊</button><br>${esc(x.pinyin)}<br>${esc(x.fr)}</div>`).join("")}</div>`}
+${(e.examples||[]).map(x=>`<div class="mu" style="margin-top:8px"><b style="color:var(--tx)">${esc(x.zh)}</b> <button class="ic" data-say="${esc(x.zh)}">${I("spk",20)}</button><br>${esc(x.pinyin)}<br>${esc(x.fr)}</div>`).join("")}</div>`}
 function runSearch(q){if(!q)return;const res=$("#res");if(typeof DICT==="undefined"){res.innerHTML='<p class="err">Dictionnaire non chargé.</p>';return}
 const r=local(q);let h=r.map(e=>e.words.length?card(e):row(e.zh,e)).join("")||'<p class="mu">Aucun résultat hors-ligne.</p>';
-const key=LS.g("k","");if(key&&navigator.onLine&&(/\s/.test(q)||/[\u3400-\u9fff]{3,}/.test(q)||!r.length))h+='<button class="ghost" id="onl">🌐 Traduire en ligne</button>';
+const key=LS.g("k","");if(key&&navigator.onLine&&(/\s/.test(q)||/[\u3400-\u9fff]{3,}/.test(q)||!r.length))h+='<button class="ghost" id="onl">Traduire en ligne</button>';
 res.innerHTML=h;const b=$("#onl");if(b)b.onclick=async()=>{b.textContent="Traduction…";try{const o=await online(q,key);res.innerHTML=o.map(card).join("")+res.innerHTML.replace(/<button class="ghost" id="onl">.*?<\/button>/,"")}catch(e){b.textContent="Indisponible : "+(e.message||"")}}}
 H.dico=q=>{bindSearch($("#dq"),runSearch);if(q)runSearch(q)};
 V.detail=zh=>{const cs=[...zh].filter(isZ),es=(idx().m.get(zh)||[]).map(toE),e=es[0]||{pinyin:"",fr:"Absent du dictionnaire hors-ligne"};
 const h=LS.g("hist",[]).filter(x=>x!==zh);h.unshift(zh);LS.s("hist",h.slice(0,60));
 cur.ci=cur.ci||0;const fv=LS.g("fav",[]).includes(zh),sn=cs[cur.ci]?strokes(cs[cur.ci]):[];
 const rel=[];if(typeof DICT!=="undefined")for(const d of DICT){if(d[0]!==zh&&d[0].startsWith(zh)&&rel.length<5)rel.push(d)}
-return `${hdr("Détail du caractère",`<button class="ic" id="fv">${fv?"★":"☆"}</button>`)}
+return `${hdr("Détail du caractère",`<button class="ic" id="fv">${I("star",24,fv)}</button>`)}
 <div class="top"><div class="gbox" id="gb"><div class="bz" style="font-size:${cs.length>1?(cs.length>2?44:60):110}px">${esc(zh)}</div>${LESSON.includes(zh)?'<span class="hsk">HSK 1</span>':""}</div>
-<div><div class="pyl">${esc(e.pinyin)}<button class="spk" id="spk">🔊</button></div><div style="font-size:20px;margin-top:10px">${esc(first(e.fr))}</div></div></div>
+<div><div class="pyl">${esc(e.pinyin)}<button class="spk" id="spk">${I("spk",20)}</button></div><div style="font-size:20px;margin-top:10px">${esc(first(e.fr))}</div></div></div>
 ${cs.length>1?`<div class="chips">${cs.map((c,i)=>`<button class="chip ${i==cur.ci?"on":""}" data-ci="${i}">${c}</button>`).join("")}</div>`:""}
-<div class="sec">📖 Définition</div>${(es.length?es:[e]).map(x=>`<div style="margin-bottom:6px"><b>${esc(x.pinyin)}</b> — ${esc(x.fr)}</div>`).join("")}
-${rel.length?`<div class="sec">💡 Mots liés</div>${rel.map(d=>row(d[0],toE(d))).join("")}`:""}
-${sn.length?`<div class="sec">Ordre des traits</div><div class="srow">${sn.map((n,j)=>`<div class="sk" title="${esc(fr(n))}">${ic(n)}<b>${j+1}</b></div>`).join("")}</div>`:""}
-<button class="red" id="anim">▶ Voir l'animation</button><button class="ghost" style="width:100%" onclick='go("train",${JSON.stringify(cs)})'>✏️ S'entraîner à l'écrire</button>`};
+<div class="sec">${I("book",20)} Définition</div>${(es.length?es:[e]).map(x=>`<div style="margin-bottom:6px"><b>${esc(x.pinyin)}</b> — ${esc(x.fr)}</div>`).join("")}
+${rel.length?`<div class="sec">${I("bulb",20)} Mots liés</div>${rel.map(d=>row(d[0],toE(d))).join("")}`:""}
+${sn.length?`<div class="sec">${I("dots",20)} Ordre des traits</div><div class="srow">${sn.map((n,j)=>`<div class="sk" title="${esc(fr(n))}">${ic(n)}<b>${j+1}</b></div>`).join("")}</div>`:""}
+<button class="red" id="anim">${I("play",18)} Voir l'animation</button><button class="ghost" style="width:100%" onclick='go("train",${JSON.stringify(cs)})'>${I("pencil",18)} S'entraîner à l'écrire</button>`};
 H.detail=zh=>{const cs=[...zh].filter(isZ),e=ent(zh);
 $("#fv").onclick=()=>{let f=LS.g("fav",[]);f=f.includes(zh)?f.filter(x=>x!==zh):[zh,...f];LS.s("fav",f);const k=cur.ci;draw();cur.ci=k};
 $("#spk").onclick=()=>speak(zh,first(e.fr));
@@ -140,14 +146,14 @@ V.train=a=>{if(a||!T)T={list:a&&a.length?a:defList(),i:0};const n=T.list.length,
 if(!ch)return `${hdr("Entraînement")}<div class="card" style="text-align:center;font-size:20px">Entraînement terminé 🎉<br><span class="mu">${n} caractères</span></div><button class="red" onclick="tab('prog')">Voir ma progression</button>`;
 const e=ent(ch),p=Math.round(T.i/n*100);
 return `${hdr("Entraînement")}<div class="pg"><span>Progression : ${T.i+1} / ${n}</span><span>${p}%</span></div><div class="bar"><i style="width:${p}%"></i></div>
-<div class="prompt">✏️ Écrivez le caractère : <b>${esc(e.pinyin)}</b> — ${esc(first(e.fr))}</div><div class="wbox"><div id="wr"></div></div><div class="fb" id="fb"></div>
-<div class="two"><button class="ghost" id="rs">↻ Recommencer</button><button class="red" id="nx">Suivant ›</button></div>`};
+<div class="prompt">${I("pencil",20)} Écrivez le caractère : <b>${esc(e.pinyin)}</b> — ${esc(first(e.fr))}</div><div class="wbox"><div id="wr"></div></div><div class="fb" id="fb"></div>
+<div class="two"><button class="ghost" id="rs">${I("refresh",18)} Recommencer</button><button class="red" id="nx">Suivant ${I("next",18)}</button></div>`};
 H.train=()=>{const ch=T&&T.list[T.i];if(!ch)return;
 const start=()=>{if(!window.HanziWriter){$("#fb").textContent="Module de tracé absent.";return}$("#wr").innerHTML="";$("#fb").textContent="Trace les traits dans l'ordre.";const sz=Math.min(320,innerWidth-64);let m=0;
 W=HanziWriter.create("wr",ch,{width:sz,height:sz,padding:12,showOutline:true,strokeColor:"#fff",outlineColor:"#555",drawingColor:"#fff",charDataLoader:hwl,onLoadCharDataError:()=>{$("#fb").textContent="Pas de données de tracé pour ce caractère."}});
 W.quiz({showHintAfterMisses:2,onMistake:()=>{m++},onComplete:()=>{$("#fb").innerHTML='<b class="ok">'+(m?"Bien joué !":"Excellent !")+'</b> '+(m?m+" erreur(s)":"Très bien écrit !");const p=LS.g("prog",{n:0,c:{}});p.n++;p.c[ch]=(p.c[ch]||0)+1;LS.s("prog",p)}})};
 start();$("#rs").onclick=start;$("#nx").onclick=()=>{T.i++;draw()}};
-V.learn=()=>`${hdr("Apprendre")}<p class="mu">Leçon HSK 1 – cours 4</p>${LESSON.map(w=>row(w,ent(w))).join("")}<button class="red" onclick='go("train",${JSON.stringify([...new Set(LESSON.join("").split(""))])})'>✏️ S'entraîner sur la leçon</button>`;
+V.learn=()=>`${hdr("Apprendre")}<p class="mu">Leçon HSK 1 – cours 4</p>${LESSON.map(w=>row(w,ent(w))).join("")}<button class="red" onclick='go("train",${JSON.stringify([...new Set(LESSON.join("").split(""))])})'>${I("pencil",18)} S'entraîner sur la leçon</button>`;
 const list=(t,k,m)=>()=>{const a=LS.g(k,[]);return `${hdr(t)}${a.length?a.map(w=>row(w,ent(w))).join(""):`<p class="mu">${m}</p>`}`};
 V.favs=list("Favoris","fav","Touche ☆ sur une fiche pour l'ajouter ici.");V.hist=list("Historique","hist","Aucun mot consulté.");
 V.prog=()=>{const p=LS.g("prog",{n:0,c:{}}),u=new Set(LESSON.join("").split("")),d=[...u].filter(c=>p.c[c]).length,pc=Math.round(d/u.size*100);
@@ -159,6 +165,6 @@ V.prof=()=>`${hdr("Profil")}<label class="set">Lecture automatique<input type="c
 <button class="ghost" id="clr">Effacer l'historique</button><p class="mu">L'application fonctionne hors-ligne. La clé API sert uniquement à traduire des phrases entières quand tu es connecté.</p>`;
 H.prof=()=>{$("#au").onchange=e=>LS.s("auto",e.target.checked);$("#rt").onchange=e=>LS.s("rate",+e.target.value);$("#ky").onchange=e=>LS.s("k",e.target.value.trim());$("#clr").onclick=()=>{LS.s("hist",[]);$("#clr").textContent="Effacé ✓"}};
 document.addEventListener("click",e=>{const d=e.target.closest("[data-d]");if(d){go("detail",d.dataset.d);return}const s=e.target.closest("[data-say]");if(s)speak(s.dataset.say,"")});
-document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
+$("#tabs").innerHTML=[["home","home","Accueil"],["dico","book","Dictionnaire"],["prog","chart","Progrès"],["prof","person","Profil"]].map(t=>`<button data-t="${t[0]}">${I(t[1],24)}${t[2]}</button>`).join("");document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
 draw();
 </script></body></html>
