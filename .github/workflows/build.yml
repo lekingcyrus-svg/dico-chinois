@@ -1,0 +1,40 @@
+name: Build APK
+on:
+  push:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: 17}
+      - run: npm install --no-audit --no-fund --legacy-peer-deps
+      - name: Bibliothèque de traits (hors-ligne)
+        run: |
+          cp "$(find node_modules/cnchar -name cnchar.min.js | head -1)" www/ || echo "cnchar manquant"
+          cp "$(find node_modules/cnchar-order -name cnchar.order.min.js | head -1)" www/ || echo "cnchar-order manquant"
+      - name: Tracé animé et écriture (hors-ligne)
+        run: |
+          cp "$(find node_modules/hanzi-writer -name hanzi-writer.min.js | head -1)" www/ || echo "hanzi-writer manquant"
+          mkdir -p www/hw
+          cp node_modules/hanzi-writer-data/*.json www/hw/ || echo "données de tracé manquantes"
+          rm -f www/hw/package.json www/hw/all.json
+      - name: Dictionnaire (CC-CEDICT + CFDICT)
+        env:
+          CFDICT_URL: ${{ vars.CFDICT_URL }}
+        run: |
+          mkdir -p data
+          curl -fL -A "Mozilla/5.0" --retry 3 https://www.mdbg.net/chinese/export/cedict/cedict_1_0_ts_utf-8_mdbg.zip -o data/cedict.zip || echo "CC-CEDICT non téléchargé"
+          unzip -o data/cedict.zip -d data || echo "zip CEDICT illisible"
+          if [ -n "$CFDICT_URL" ]; then curl -fL "$CFDICT_URL" -o data/cfdict.raw || echo "CFDICT non téléchargé"; fi
+          node scripts/build-dict.js
+      - run: npx cap add android
+      - run: npx cap sync android
+      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dictionnaire-chinois-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
