@@ -1,0 +1,164 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><title>DicoChinois</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>
+:root{--bg:#0b0b0c;--cd:#18181b;--bd:#2c2c31;--rd:#c8102e;--tx:#f3f3f3;--mu:#9a9aa1;box-sizing:border-box}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,sans-serif}
+#app{padding:calc(env(safe-area-inset-top,0px) + 14px) 16px 96px}
+button{font:inherit;color:inherit;cursor:pointer}
+.mu{color:var(--mu);font-size:13px}.err{color:var(--rd)}.ok{color:#3ecf8e}
+.hero{display:flex;align-items:center;gap:14px;padding:10px 0 16px}
+.seal{border:2px solid var(--rd);color:var(--rd);font-size:24px;line-height:1.1;padding:6px 8px;text-align:center;border-radius:4px}
+.logo{font:700 34px Georgia,serif}.logo span{color:var(--rd)}
+.sb{display:flex;align-items:center;gap:8px;background:var(--cd);border:1px solid var(--bd);border-radius:28px;padding:6px 8px 6px 16px;margin-bottom:14px}
+.sb input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--tx);font-size:17px;padding:8px 0}
+.ic{background:none;border:0;font-size:20px;padding:4px 8px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:linear-gradient(#202024,#141417);border:1px solid var(--bd);border-radius:14px;padding:16px 8px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:6px}
+.tile i{font-style:normal;font-size:26px}
+.wod{width:100%;margin-top:12px;display:flex;justify-content:space-between;align-items:center;text-align:left;background:linear-gradient(90deg,#24090d,#141417);border:1px solid var(--bd);border-left:3px solid var(--rd);border-radius:14px;padding:14px}
+.wz{font-size:30px}.wod span{font-size:26px;color:var(--mu)}
+.hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.hd h2{margin:0;font-size:18px;font-weight:600}.hd .ic{font-size:26px;min-width:40px}
+.row{width:100%;display:flex;align-items:center;gap:14px;text-align:left;background:var(--cd);border:1px solid var(--bd);border-radius:12px;padding:10px 14px;margin-bottom:8px}
+.rz{font-size:30px;color:var(--rd);min-width:44px}
+.card{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px}
+.top{display:flex;gap:14px;align-items:center}
+.gbox{position:relative;flex:none;width:170px;height:170px;display:flex;align-items:center;justify-content:center;background:#121214;border:1px solid var(--bd);border-radius:18px;background-image:linear-gradient(45deg,transparent 49.5%,#2a2a2e 50%,transparent 50.5%),linear-gradient(-45deg,transparent 49.5%,#2a2a2e 50%,transparent 50.5%)}
+.bz{font-family:"Noto Serif SC","Songti SC",serif;word-break:keep-all;text-align:center}
+.hsk{position:absolute;top:-8px;right:-6px;background:var(--rd);border-radius:10px;font-size:12px;padding:2px 8px}
+.pyl{display:flex;align-items:center;gap:10px;font-size:28px;font-weight:300}
+.spk{background:var(--rd);border:0;border-radius:50%;width:44px;height:44px;font-size:18px}
+.sec{display:flex;align-items:center;gap:8px;font-weight:600;margin:16px 0 8px;border-left:3px solid var(--rd);padding-left:8px}
+.srow{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.sk{flex:none;width:56px;text-align:center;background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:4px;font-size:12px;color:var(--mu)}
+.sk svg{width:34px;height:34px;display:block;margin:0 auto}.sk svg path{fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.red{width:100%;background:linear-gradient(#d3142f,#9c0b20);border:0;border-radius:26px;padding:14px;font-weight:600;margin-top:14px}
+.ghost{background:none;border:1px solid var(--bd);border-radius:26px;padding:12px 16px;margin-top:10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.two .red,.two .ghost{margin-top:10px}
+.chips{display:flex;gap:6px;margin:10px 0}.chip{background:var(--cd);border:1px solid var(--bd);border-radius:10px;padding:4px 12px;font-size:22px}.chip.on{border-color:var(--rd);color:var(--rd)}
+.pg{display:flex;justify-content:space-between;font-weight:600;margin-bottom:6px}
+.bar{height:10px;background:var(--cd);border-radius:6px;overflow:hidden;margin-bottom:12px}.bar i{display:block;height:100%;background:var(--rd)}
+.prompt{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.wbox{background:var(--cd);border:1px solid var(--bd);border-radius:16px;display:flex;justify-content:center;padding:8px;touch-action:none}
+.fb{margin:12px 0;min-height:44px;background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:10px 14px}
+.ws{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.wd{background:#222226;border-radius:8px;padding:4px 8px;font-size:13px;text-align:center}.wd b{display:block;font-size:18px;color:var(--rd)}
+.stat{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd)}
+#tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:#101012;border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+#tabs button{flex:1;background:none;border:0;padding:8px 0;font-size:11px;color:var(--mu);display:flex;flex-direction:column;align-items:center;gap:2px}
+#tabs button i{font-style:normal;font-size:20px}#tabs button.on{color:var(--rd)}
+label.set{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd)}
+input.in{background:var(--cd);border:1px solid var(--bd);color:var(--tx);border-radius:8px;padding:8px;width:55%}
+</style></head><body>
+<div id="app"></div><nav id="tabs"><button data-t="home"><i>🏠</i>Accueil</button><button data-t="dico"><i>📖</i>Dictionnaire</button><button data-t="prog"><i>📊</i>Progrès</button><button data-t="prof"><i>👤</i>Profil</button></nav>
+<script src="cnchar.min.js"></script><script src="cnchar.order.min.js"></script><script src="hanzi-writer.min.js"></script><script src="dict.js"></script>
+<script>
+const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const LS={g:(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},s:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const F={"横":"horizontal","竖":"vertical","撇":"barre gauche","捺":"barre droite","点":"point","提":"montant","折":"coude","钩":"crochet","弯":"courbe","斜":"oblique","卧":"couché"};
+const fr=n=>[...n].map(c=>F[c]||c).join("-");
+const P={"横":"M3 12H21","竖":"M12 3V21","撇":"M18 4Q10 12 5 20","捺":"M5 5Q12 13 20 20","点":"M10 5Q14 8 14 17","提":"M4 19L20 7","横折":"M4 5H19V21","横钩":"M4 11H19L16 17","横撇":"M5 5H19Q15 13 7 20","横折钩":"M4 6H19V20L16 17","竖钩":"M12 3V19L8 17","竖折":"M6 4V19H20","竖提":"M8 4V19L18 12","撇折":"M17 4Q9 8 6 12H19","撇点":"M16 4Q10 8 6 13L13 19","竖弯钩":"M7 4V15Q9 20 15 20H20V15","斜钩":"M5 4L18 19L21 11","卧钩":"M5 8Q12 21 20 8","横折弯钩":"M4 5H16Q20 7 20 12V18Q20 20 17 20","横折提":"M4 6H17V20M13 18L21 12","竖弯":"M7 4V15Q9 20 15 20H20","横折折":"M4 5H19L7 14H20","弯钩":"M10 4Q4 12 8 17Q12 21 19 17","横折折折钩":"M4 5H12L8 11H18Q21 13 17 20","竖折折钩":"M5 4V9H18L8 20L11 17","横斜钩":"M4 7H12L20 19L22 12","横折弯":"M4 5H15Q20 6 20 12V19","竖折撇":"M5 4V12L12 12L7 20","竖折折":"M5 4V10H19V20","撇钩":"M17 4Q9 8 6 18L10 15"};
+const ic=n=>`<svg viewBox="0 0 24 24"><path d="${P[n]||"M5 12H19"}"/></svg>`;
+function strokes(c){try{let r=cnchar.stroke(c,"order","name");if(Array.isArray(r[0]))r=r[0];return Array.isArray(r)?r:[]}catch(e){return[]}}
+
+function say(text,lang,rate){return new Promise(res=>{if(!window.speechSynthesis){res();return}
+const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=rate;
+const v=speechSynthesis.getVoices().find(v=>v.lang.replace("_","-").startsWith(lang));if(v)u.voice=v;
+u.onend=u.onerror=()=>res();speechSynthesis.speak(u)})}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+const NP=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9\u3400-\u9fff]/g,"");
+let IDX=null;
+function idx(){if(IDX)return IDX;IDX={m:new Map(),n:1};for(const e of DICT){let a=IDX.m.get(e[0]);if(!a)IDX.m.set(e[0],a=[]);a.push(e);if(e[0].length>IDX.n)IDX.n=e[0].length}return IDX}
+const toE=e=>({zh:e[0],pinyin:e[1],fr:e[3]||(e[2]+" (anglais)"),note:e[3]&&e[2]?"EN : "+e[2]:"",words:[],examples:[]});
+function local(q){const I=idx(),isZ=/[\u3400-\u9fff]/.test(q);let r=[];
+if(isZ){const ex=I.m.get(q)||[];r=ex.map(toE);
+if(!ex.length||q.length>3){const ws=[];let i=0;while(i<q.length){let ok=0;for(let l=Math.min(I.n,q.length-i);l>0;l--){const h=I.m.get(q.slice(i,i+l));if(h){const e=toE(h[0]);ws.push({zh:e.zh,pinyin:e.pinyin,fr:e.fr.split(/[;\/]/)[0]});i+=l;ok=1;break}}if(!ok){ws.push({zh:q[i],pinyin:"",fr:""});i++}}
+if(ws.length>1||!ex.length)r.unshift({zh:q,pinyin:ws.map(w=>w.pinyin).join(" "),fr:"Découpage mot à mot (hors-ligne)",words:ws,examples:[]})}
+if(q.length<=3){let n=0;for(const e of DICT){if(e[0]!==q&&e[0].startsWith(q)&&n<6){r.push(toE(e));n++}}}
+}else{const k=NP(q),ql=q.toLowerCase().trim(),sc=[];
+for(const e of DICT){let s=0;if(k.length>1&&NP(e[1])===k)s=5;else{const g=(e[3]||e[2]).toLowerCase(),ps=g.split(/[;\/]/).map(x=>x.replace(/\(.*?\)/g,"").trim());
+if(ps.includes(ql))s=4;else if(ps.some(p=>p.startsWith(ql)))s=2;else if(g.includes(ql))s=1}
+if(s)sc.push([s+(e[3]?.5:0)-e[0].length/20,e])}
+sc.sort((a,b)=>b[0]-a[0]);r=sc.slice(0,12).map(x=>toE(x[1]))}
+return r}
+async function online(q,key){const prompt=`Tu es un dictionnaire chinois-français pour apprenants (chinois simplifié). Entrée : « ${q} ». Si c'est une phrase, donne 1 entrée avec la traduction complète et "words" (découpage mot à mot) ; si c'est un mot, jusqu'à 3 entrées avec 1 à 2 exemples. Réponds UNIQUEMENT en JSON : {"entries":[{"zh":"","pinyin":"avec tons","fr":"","pos":"","hsk":"","note":"","words":[{"zh":"","pinyin":"","fr":""}],"examples":[{"zh":"","pinyin":"","fr":""}]}]}`;
+const resp=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-5-5",max_tokens:1500,messages:[{role:"user",content:prompt}]})});
+const j=await resp.json();if(!resp.ok)throw new Error(j.error&&j.error.message||"erreur API");
+return JSON.parse(j.content.map(c=>c.text||"").join("").replace(/```json|```/g,"").trim()).entries.filter(e=>e&&e.zh)}
+
+let tk=0;const stop=()=>{tk++;if(window.speechSynthesis)speechSynthesis.cancel()};
+async function speak(zh,f){stop();const t=tk,r=+LS.g("rate",.8);await say(zh,"zh-CN",r);if(t!=tk||!f)return;await wait(400);if(t==tk)await say(f,"fr-FR",1)}
+const LESSON="同学 朋友 什么 呢 老师 汉字 学生 中国 谁 名字 美国 吗".split(" "),WOTD=["你好","谢谢","再见",...LESSON];
+const first=g=>(g||"").split(/[;\/]/)[0].replace(/\(.*?\)/g,"").trim();
+const ent=zh=>{const a=typeof DICT!=="undefined"&&idx().m.get(zh);return a?toE(a[0]):{zh,pinyin:"",fr:"",note:"",words:[],examples:[]}};
+const row=(zh,e)=>`<button class="row" data-d="${esc(zh)}"><span class="rz">${esc(zh)}</span><span><b>${esc(e.pinyin)}</b><br><span class="mu">${esc(first(e.fr))}</span></span></button>`;
+const hdr=(t,r)=>`<div class="hd"><button class="ic" onclick="back()">‹</button><h2>${t}</h2><div>${r||"<span style='min-width:40px;display:inline-block'></span>"}</div></div>`;
+const hwl=(c,ok,er)=>fetch("hw/"+encodeURIComponent(c)+".json").then(r=>{if(!r.ok)throw 0;return r.json()}).then(ok).catch(er);
+const isZ=c=>/[\u3400-\u9fff]/.test(c);
+let stack=[],cur={v:"home"},W=null,T=null;const V={},H={};
+function go(v,a){stack.push(cur);cur={v,a};draw()}
+function back(){cur=stack.pop()||{v:"home"};draw()}
+function tab(v){stack=[];cur={v};draw()}
+function draw(){stop();W=null;$("#app").innerHTML=V[cur.v](cur.a);if(H[cur.v])H[cur.v](cur.a);scrollTo(0,0);
+const m={home:"home",dico:"dico",detail:"dico",prog:"prog",prof:"prof"}[cur.v];document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===m))}
+function bindSearch(inp,fn){inp.onkeydown=e=>{if(e.key==="Enter")fn(inp.value.trim())};const m=$("#mic"),R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R){m.style.display="none";return}
+m.onclick=()=>{const r=new R();r.lang="fr-FR";r.onresult=e=>{inp.value=e.results[0][0].transcript;fn(inp.value.trim())};try{r.start()}catch(x){}}}
+const SB=(id,v)=>`<div class="sb"><span>🔍</span><input id="${id}" value="${esc(v||"")}" placeholder="Français, 中文 ou pinyin…" enterkeyhint="search"><button class="ic" id="mic">🎤</button></div>`;
+V.home=()=>{const w=WOTD[Math.floor(Date.now()/864e5)%WOTD.length],e=ent(w);
+const T6=[["📖","Dictionnaire","go('dico')"],["🎓","Apprendre","go('learn')"],["✏️","Exercices","go('train',[])"],["⭐","Favoris","go('favs')"],["🕘","Historique","go('hist')"],["📊","Progression","tab('prog')"]];
+return `<div class="hero"><div class="seal">中<br>文</div><div><div class="logo">Dico<span>Chinois</span></div><div class="mu">Apprendre • Comprendre • Réussir</div></div></div>${SB("hq")}
+<div class="tiles">${T6.map(t=>`<button class="tile" onclick="${t[2]}"><i>${t[0]}</i>${t[1]}</button>`).join("")}</div>
+<button class="wod" data-d="${w}"><div><div class="mu">Mot du jour</div><div class="wz">${w}</div><div class="mu">${esc(e.pinyin)} • ${esc(first(e.fr))}</div></div><span>›</span></button>`};
+H.home=()=>bindSearch($("#hq"),q=>q&&go("dico",q));
+V.dico=q=>`${hdr("Dictionnaire")}${SB("dq",q)}<div id="res"></div>`;
+function card(e){return `<div class="card"><div class="top"><div style="flex:1"><div class="rz" style="font-size:26px">${esc(e.zh)}</div><b>${esc(e.pinyin)}</b></div><button class="spk" data-say="${esc(e.zh)}">🔊</button></div><div style="margin-top:6px">${esc(e.fr)}</div>
+${(e.words||[]).length?`<div class="ws">${e.words.map(w=>`<div class="wd"><b>${esc(w.zh)}</b>${esc(w.pinyin)}<br>${esc(w.fr)}</div>`).join("")}</div>`:""}
+${(e.examples||[]).map(x=>`<div class="mu" style="margin-top:8px"><b style="color:var(--tx)">${esc(x.zh)}</b> <button class="ic" data-say="${esc(x.zh)}">🔊</button><br>${esc(x.pinyin)}<br>${esc(x.fr)}</div>`).join("")}</div>`}
+function runSearch(q){if(!q)return;const res=$("#res");if(typeof DICT==="undefined"){res.innerHTML='<p class="err">Dictionnaire non chargé.</p>';return}
+const r=local(q);let h=r.map(e=>e.words.length?card(e):row(e.zh,e)).join("")||'<p class="mu">Aucun résultat hors-ligne.</p>';
+const key=LS.g("k","");if(key&&navigator.onLine&&(/\s/.test(q)||/[\u3400-\u9fff]{3,}/.test(q)||!r.length))h+='<button class="ghost" id="onl">🌐 Traduire en ligne</button>';
+res.innerHTML=h;const b=$("#onl");if(b)b.onclick=async()=>{b.textContent="Traduction…";try{const o=await online(q,key);res.innerHTML=o.map(card).join("")+res.innerHTML.replace(/<button class="ghost" id="onl">.*?<\/button>/,"")}catch(e){b.textContent="Indisponible : "+(e.message||"")}}}
+H.dico=q=>{bindSearch($("#dq"),runSearch);if(q)runSearch(q)};
+V.detail=zh=>{const cs=[...zh].filter(isZ),es=(idx().m.get(zh)||[]).map(toE),e=es[0]||{pinyin:"",fr:"Absent du dictionnaire hors-ligne"};
+const h=LS.g("hist",[]).filter(x=>x!==zh);h.unshift(zh);LS.s("hist",h.slice(0,60));
+cur.ci=cur.ci||0;const fv=LS.g("fav",[]).includes(zh),sn=cs[cur.ci]?strokes(cs[cur.ci]):[];
+const rel=[];if(typeof DICT!=="undefined")for(const d of DICT){if(d[0]!==zh&&d[0].startsWith(zh)&&rel.length<5)rel.push(d)}
+return `${hdr("Détail du caractère",`<button class="ic" id="fv">${fv?"★":"☆"}</button>`)}
+<div class="top"><div class="gbox" id="gb"><div class="bz" style="font-size:${cs.length>1?(cs.length>2?44:60):110}px">${esc(zh)}</div>${LESSON.includes(zh)?'<span class="hsk">HSK 1</span>':""}</div>
+<div><div class="pyl">${esc(e.pinyin)}<button class="spk" id="spk">🔊</button></div><div style="font-size:20px;margin-top:10px">${esc(first(e.fr))}</div></div></div>
+${cs.length>1?`<div class="chips">${cs.map((c,i)=>`<button class="chip ${i==cur.ci?"on":""}" data-ci="${i}">${c}</button>`).join("")}</div>`:""}
+<div class="sec">📖 Définition</div>${(es.length?es:[e]).map(x=>`<div style="margin-bottom:6px"><b>${esc(x.pinyin)}</b> — ${esc(x.fr)}</div>`).join("")}
+${rel.length?`<div class="sec">💡 Mots liés</div>${rel.map(d=>row(d[0],toE(d))).join("")}`:""}
+${sn.length?`<div class="sec">Ordre des traits</div><div class="srow">${sn.map((n,j)=>`<div class="sk" title="${esc(fr(n))}">${ic(n)}<b>${j+1}</b></div>`).join("")}</div>`:""}
+<button class="red" id="anim">▶ Voir l'animation</button><button class="ghost" style="width:100%" onclick='go("train",${JSON.stringify(cs)})'>✏️ S'entraîner à l'écrire</button>`};
+H.detail=zh=>{const cs=[...zh].filter(isZ),e=ent(zh);
+$("#fv").onclick=()=>{let f=LS.g("fav",[]);f=f.includes(zh)?f.filter(x=>x!==zh):[zh,...f];LS.s("fav",f);const k=cur.ci;draw();cur.ci=k};
+$("#spk").onclick=()=>speak(zh,first(e.fr));
+document.querySelectorAll("[data-ci]").forEach(b=>b.onclick=()=>{cur.ci=+b.dataset.ci;draw()});
+$("#anim").onclick=()=>{const ch=cs[cur.ci];if(!window.HanziWriter||!ch)return;$("#gb").innerHTML="";W=HanziWriter.create("gb",ch,{width:168,height:168,padding:10,strokeColor:"#fff",outlineColor:"#444",radicalColor:"#c8102e",charDataLoader:hwl,onLoadCharDataError:()=>{$("#gb").innerHTML='<div class="mu">Tracé indisponible.</div>'}});W.animateCharacter()};
+if(LS.g("auto",true))speak(zh,first(e.fr))};
+const defList=()=>[...new Set([...LS.g("fav",[]),...LS.g("hist",[]),...LESSON].flatMap(w=>[...w]).filter(isZ))].sort(()=>Math.random()-.5).slice(0,10);
+V.train=a=>{if(a||!T)T={list:a&&a.length?a:defList(),i:0};const n=T.list.length,ch=T.list[T.i];
+if(!ch)return `${hdr("Entraînement")}<div class="card" style="text-align:center;font-size:20px">Entraînement terminé 🎉<br><span class="mu">${n} caractères</span></div><button class="red" onclick="tab('prog')">Voir ma progression</button>`;
+const e=ent(ch),p=Math.round(T.i/n*100);
+return `${hdr("Entraînement")}<div class="pg"><span>Progression : ${T.i+1} / ${n}</span><span>${p}%</span></div><div class="bar"><i style="width:${p}%"></i></div>
+<div class="prompt">✏️ Écrivez le caractère : <b>${esc(e.pinyin)}</b> — ${esc(first(e.fr))}</div><div class="wbox"><div id="wr"></div></div><div class="fb" id="fb"></div>
+<div class="two"><button class="ghost" id="rs">↻ Recommencer</button><button class="red" id="nx">Suivant ›</button></div>`};
+H.train=()=>{const ch=T&&T.list[T.i];if(!ch)return;
+const start=()=>{if(!window.HanziWriter){$("#fb").textContent="Module de tracé absent.";return}$("#wr").innerHTML="";$("#fb").textContent="Trace les traits dans l'ordre.";const sz=Math.min(320,innerWidth-64);let m=0;
+W=HanziWriter.create("wr",ch,{width:sz,height:sz,padding:12,showOutline:true,strokeColor:"#fff",outlineColor:"#555",drawingColor:"#fff",charDataLoader:hwl,onLoadCharDataError:()=>{$("#fb").textContent="Pas de données de tracé pour ce caractère."}});
+W.quiz({showHintAfterMisses:2,onMistake:()=>{m++},onComplete:()=>{$("#fb").innerHTML='<b class="ok">'+(m?"Bien joué !":"Excellent !")+'</b> '+(m?m+" erreur(s)":"Très bien écrit !");const p=LS.g("prog",{n:0,c:{}});p.n++;p.c[ch]=(p.c[ch]||0)+1;LS.s("prog",p)}})};
+start();$("#rs").onclick=start;$("#nx").onclick=()=>{T.i++;draw()}};
+V.learn=()=>`${hdr("Apprendre")}<p class="mu">Leçon HSK 1 – cours 4</p>${LESSON.map(w=>row(w,ent(w))).join("")}<button class="red" onclick='go("train",${JSON.stringify([...new Set(LESSON.join("").split(""))])})'>✏️ S'entraîner sur la leçon</button>`;
+const list=(t,k,m)=>()=>{const a=LS.g(k,[]);return `${hdr(t)}${a.length?a.map(w=>row(w,ent(w))).join(""):`<p class="mu">${m}</p>`}`};
+V.favs=list("Favoris","fav","Touche ☆ sur une fiche pour l'ajouter ici.");V.hist=list("Historique","hist","Aucun mot consulté.");
+V.prog=()=>{const p=LS.g("prog",{n:0,c:{}}),u=new Set(LESSON.join("").split("")),d=[...u].filter(c=>p.c[c]).length,pc=Math.round(d/u.size*100);
+return `${hdr("Progression")}<div class="pg"><span>Leçon HSK 1</span><span>${pc}%</span></div><div class="bar"><i style="width:${pc}%"></i></div>
+<div class="stat"><span>Caractères écrits (total)</span><b>${p.n}</b></div><div class="stat"><span>Caractères différents</span><b>${Object.keys(p.c).length}</b></div><div class="stat"><span>Mots consultés</span><b>${LS.g("hist",[]).length}</b></div><div class="stat"><span>Favoris</span><b>${LS.g("fav",[]).length}</b></div>`};
+V.prof=()=>`${hdr("Profil")}<label class="set">Lecture automatique<input type="checkbox" id="au" ${LS.g("auto",true)?"checked":""}></label>
+<label class="set">Vitesse de lecture<input type="range" id="rt" min="0.5" max="1.1" step="0.1" value="${LS.g("rate",.8)}"></label>
+<label class="set">Clé API (option en ligne)<input class="in" type="password" id="ky" value="${esc(LS.g("k",""))}" placeholder="sk-ant-…"></label>
+<button class="ghost" id="clr">Effacer l'historique</button><p class="mu">L'application fonctionne hors-ligne. La clé API sert uniquement à traduire des phrases entières quand tu es connecté.</p>`;
+H.prof=()=>{$("#au").onchange=e=>LS.s("auto",e.target.checked);$("#rt").onchange=e=>LS.s("rate",+e.target.value);$("#ky").onchange=e=>LS.s("k",e.target.value.trim());$("#clr").onclick=()=>{LS.s("hist",[]);$("#clr").textContent="Effacé ✓"}};
+document.addEventListener("click",e=>{const d=e.target.closest("[data-d]");if(d){go("detail",d.dataset.d);return}const s=e.target.closest("[data-say]");if(s)speak(s.dataset.say,"")});
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
+draw();
+</script></body></html>
