@@ -1,0 +1,5 @@
+DicoChinois - version web pour iPhone
+
+1. Allez sur app.netlify.com/drop et glissez-y ce dossier (dezippe).
+2. Netlify donne une adresse https://xxxx.netlify.app
+3. Sur l'iPhone, ouvrez cette adresse dans SAFARI, touchez Partager, puis Sur l'ecran d'accueil.
