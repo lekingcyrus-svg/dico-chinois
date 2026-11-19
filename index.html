@@ -1014,7 +1014,9 @@ const AUD={};let REC=null,CUR_AUDIO=null,PRES=0;
 const fmtD=d=>{d=+d||0;return Math.floor(d/60)+":"+String(d%60).padStart(2,"0")};
 setInterval(async()=>{const a=AU();if(!a||Date.now()<PRES)return;PRES=Date.now()+300000;try{const pf=PF(),u=me();await fbj("users/"+u.id,{m:"PUT",b:{n:u.n,nl:u.n.toLowerCase(),nat:pf.nat,lrn:pf.lrn,ts:Date.now()}})}catch(e){PRES=Date.now()+30000}},3000);
 const hideRec=()=>{const r=$("#rec");if(r)r.remove()};
-async function recStart(){if(REC)return;let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){return toast("Micro non autorisé")}
+async function recStart(){if(REC)return;let st;
+try{const SR=CP().SpeechRecognition;if(SR&&SR.requestPermissions){const p=await SR.requestPermissions();if(p.speechRecognition&&p.speechRecognition!=="granted")return toast("Autorise le micro : Réglages > Applications > DicoChinois > Autorisations")}}catch(e){}
+try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){const n=(e&&e.name)||"erreur";return toast(n==="NotFoundError"?"Aucun micro détecté":n==="NotReadableError"?"Micro utilisé par une autre application":"Micro bloqué ("+n+")")}
 const mt=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t))||"";
 const mr=new MediaRecorder(st,mt?{mimeType:mt,audioBitsPerSecond:24000}:{audioBitsPerSecond:24000}),ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};
 REC={mr,st,ch,t0:Date.now(),mt:(mr.mimeType||mt||"audio/webm").split(";")[0]};mr.start();

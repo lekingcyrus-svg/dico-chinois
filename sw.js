@@ -1,4 +1,4 @@
-const V="dico-v7",CORE=["./","index.html","dict.js","hsk.js","cnchar.min.js","cnchar.order.min.js","hanzi-writer.min.js","manifest.webmanifest","offline.js","icon-192.png"];
+const V="dico-v8",CORE=["./","index.html","dict.js","hsk.js","cnchar.min.js","cnchar.order.min.js","hanzi-writer.min.js","manifest.webmanifest","offline.js","icon-192.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V&&x!=="dico-hw").map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{const r=e.request,u=new URL(r.url);if(r.method!=="GET"||u.origin!==location.origin)return;
