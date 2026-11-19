@@ -962,26 +962,26 @@ box.innerHTML=`<div class="card"><div class="mu">Ton nom</div><input class="in" 
 const sv=()=>{LS.s("nm",($("#mn").value.trim().slice(0,24))||u.n);LS.s("pf",{nat:$("#pn").value,lrn:$("#pl2").value});draw()};
 ["#mn","#pn","#pl2"].forEach(x=>$(x).onchange=sv);
 const go2=()=>{LS.s("sq",$("#sq").value.trim());draw()};$("#sg").onclick=go2;$("#sq").onkeydown=e=>{if(e.key==="Enter")go2()};
-const q=sq?'orderBy="nl"&startAt='+JSON.stringify(sq)+"&endAt="+JSON.stringify(sq+"\uf8ff")+"&limitToFirst=30":'orderBy="ts"&limitToLast=40';
+const q=sq?'orderBy="nl"&startAt='+JSON.stringify(sq)+"&endAt="+JSON.stringify(sq+"\uf8ff")+"&limitToFirst=30":'orderBy="ts"&limitToLast='+LS.g("plim",40);
 const all=(await fbj("users",{q}))||{},ok=x=>x.nat==pf.lrn&&x.lrn==pf.nat;
 const a=Object.entries(all).filter(([id])=>id!==u.id&&!bl[id]).map(([id,v])=>({id,...v})).sort((x,y)=>(+ok(y))-(+ok(x))||y.ts-x.ts);
-if($("#pl"))$("#pl").innerHTML=a.map(x=>row(x.id,x.n,(ok(x)?"🤝 ":"")+"parle "+(LN[x.nat]||"?")+" · apprend "+(LN[x.lrn]||"?"))).join("")||"Personne trouvé."}
-wire()}catch(e){if($("#sp"))$("#sp").textContent="Connexion impossible : "+e.message}})()};
-V.pchat=a=>`${hdr(esc(a.n),'<button class="ic" id="pmn" aria-label="Options">⋯</button>')}<div class="cm" id="pm"></div><div style="height:76px"></div><div class="cbar"><div class="sb" style="margin:0"><input id="pi" placeholder="Écris un message…" autocomplete="off" maxlength="500"><button class="ic" id="ps">${I("send",22)}</button></div></div>`;
+if($("#pl"))$("#pl").innerHTML=a.map(x=>row(x.id,x.n,(ok(x)?"🤝 ":"")+"parle "+(LN[x.nat]||"?")+" · apprend "+(LN[x.lrn]||"?"))).join("")+(Object.keys(all).length>=LS.g("plim",40)&&!sq?'<button class="ghost" id="pmore">Voir plus de personnes</button>':"")||"Personne trouvé."}
+{const pm=$("#pmore");if(pm)pm.onclick=()=>{LS.s("plim",LS.g("plim",40)+40);draw()}}wire()}catch(e){if($("#sp"))$("#sp").textContent="Connexion impossible : "+e.message}})()};
+V.pchat=a=>`${hdr(esc(a.n),'<button class="ic" id="pmn" aria-label="Options">⋯</button>')}<div class="cm" id="pm"></div><div style="height:76px"></div><div class="cbar"><div class="sb" style="margin:0"><input id="pi" placeholder="Écris un message…" autocomplete="off" maxlength="500"><button class="ic" id="pmic" aria-label="Message vocal">${I("mic",22)}</button><button class="ic" id="ps">${I("send",22)}</button></div></div>`;
 H.pchat=async a=>{const u=me(),rid=RID(u.id,a.id),room="rooms/"+rid+"/m",box=$("#pm"),tk=++PTK;let seen="",ms=[],clr=0,isC=false,isB=false,seenTs=0;
-const paint=()=>{if(!box.isConnected)return;box.innerHTML=ms.map(m=>`<div class="b ${m.u===u.id?"u":""}"><div class="t">${esc(m.t)}</div>${m.u!==u.id?(TRM[m.t]?`<div class="p">${esc(TRM[m.t])}</div>`:`<button class="ic" data-tr="${esc(m.t)}" style="font-size:12px;padding:2px 0;color:var(--mu)">✨ Traduire</button>`):""}</div>`).join("")||'<div class="mu" style="text-align:center">Dis bonjour 👋 — corrigez-vous mutuellement !</div>';scrollTo(0,document.body.scrollHeight)};
-const refresh=async()=>{try{const d=(await fbj(room,{q:'orderBy="ts"&limitToLast=60'}))||{};ms=Object.values(d).filter(m=>m.ts>clr).sort((x,y)=>x.ts-y.ts);const k=ms.length+"_"+(ms.length?ms[ms.length-1].ts:0);if(k!==seen){seen=k;paint();const last=ms.length?ms[ms.length-1].ts:0;if(last>seenTs){seenTs=last;fbj("inbox/"+u.id+"/"+a.id,{m:"PATCH",b:{seen:last}}).catch(()=>{})}}}catch(e){}};
+const paint=()=>{if(!box.isConnected)return;box.innerHTML=ms.map(m=>`<div class="b ${m.u===u.id?"u":""}"><div class="t">${m.a?`<button class="ic" data-pl="${esc(m.k)}" data-mt="${esc(m.mt||"")}" style="display:flex;gap:8px;align-items:center;font-size:15px">▶ <span>${fmtD(m.d)}</span></button>`:esc(m.t)}</div>${m.u!==u.id?(m.a?(TRM[m.k]?`<div class="p">${esc(TRM[m.k])}</div>`:`<button class="ic" data-tx="${esc(m.k)}" data-mt="${esc(m.mt||"")}" style="font-size:12px;padding:2px 0;color:var(--mu)">✨ Transcrire</button>`):TRM[m.t]?`<div class="p">${esc(TRM[m.t])}</div>`:`<button class="ic" data-tr="${esc(m.t)}" style="font-size:12px;padding:2px 0;color:var(--mu)">✨ Traduire</button>`):""}</div>`).join("")||'<div class="mu" style="text-align:center">Dis bonjour 👋 — corrigez-vous mutuellement !</div>';scrollTo(0,document.body.scrollHeight)};
+const refresh=async()=>{try{const d=(await fbj(room,{q:'orderBy="ts"&limitToLast=60'}))||{};ms=Object.entries(d).map(([k,v])=>({...v,k})).filter(m=>m.ts>clr).sort((x,y)=>x.ts-y.ts);const k=ms.length+"_"+(ms.length?ms[ms.length-1].ts:0);if(k!==seen){seen=k;paint();const last=ms.length?ms[ms.length-1].ts:0;if(last>seenTs){seenTs=last;fbj("inbox/"+u.id+"/"+a.id,{m:"PATCH",b:{seen:last}}).catch(()=>{})}}}catch(e){}};
 try{const r=await Promise.all([fbj("inbox/"+u.id+"/"+a.id),fbj("contacts/"+u.id+"/"+a.id),fbj("blocks/"+u.id+"/"+a.id)]);clr=(r[0]&&r[0].clr)||0;isC=!!r[1];isB=!!r[2]}catch(e){}
 if(tk!==PTK||cur.v!=="pchat")return;
 if(isB){$("#pi").disabled=true;$("#pi").placeholder="Tu as bloqué cette personne"}
-const loop=async()=>{if(tk!==PTK||cur.v!=="pchat")return;await refresh();setTimeout(loop,2500)};loop();
+window.PCR=refresh;const loop=async()=>{if(tk!==PTK||cur.v!=="pchat")return;await refresh();setTimeout(loop,2500)};loop();
 const send=async()=>{const t=$("#pi").value.trim().slice(0,500);if(!t||isB)return;$("#pi").value="";const n=Date.now(),id=n.toString(36)+Math.random().toString(36).slice(2,6),o={};
 o["rooms/"+rid+"/m/"+id]={u:u.id,to:a.id,t,ts:n};
 o["inbox/"+a.id+"/"+u.id+"/n"]=u.n;o["inbox/"+a.id+"/"+u.id+"/t"]=t.slice(0,200);o["inbox/"+a.id+"/"+u.id+"/ts"]=n;
 o["inbox/"+u.id+"/"+a.id+"/n"]=a.n;o["inbox/"+u.id+"/"+a.id+"/t"]=t.slice(0,200);o["inbox/"+u.id+"/"+a.id+"/ts"]=n;o["inbox/"+u.id+"/"+a.id+"/seen"]=n;
 try{await fbj("",{m:"PATCH",b:o});await refresh()}catch(e){toast("Message non envoyé")}};
 $("#ps").onclick=send;$("#pi").onkeydown=e=>{if(e.key==="Enter")send()};
-box.onclick=async e=>{const b=e.target.closest("[data-tr]");if(!b)return;const t=b.dataset.tr;b.textContent="…";try{TRM[t]=(await gcall({contents:[{parts:[{text:"Traduis en français, et donne le pinyin si c'est du chinois. Très bref : "+t}]}],generationConfig:{maxOutputTokens:300}})).trim()}catch(x){TRM[t]="Traduction indisponible"}paint()};
+box.onclick=async e=>{const pl=e.target.closest("[data-pl]");if(pl)return playMsg(pl,rid);const tx=e.target.closest("[data-tx]");if(tx)return transcribe(tx,rid,paint);const b=e.target.closest("[data-tr]");if(!b)return;const t=b.dataset.tr;b.textContent="…";try{TRM[t]=(await gcall({contents:[{parts:[{text:"Traduis en français, et donne le pinyin si c'est du chinois. Très bref : "+t}]}],generationConfig:{maxOutputTokens:300}})).trim()}catch(x){TRM[t]="Traduction indisponible"}paint()};
 $("#pmn").onclick=()=>sheet(a.n,[
 {t:isC?"Retirer des contacts":"Ajouter aux contacts",f:async()=>{try{await fbj("contacts/"+u.id+"/"+a.id,isC?{m:"DELETE"}:{m:"PUT",b:{n:a.n}});isC=!isC;toast(isC?"Contact ajouté":"Contact retiré")}catch(e){toast("Échec")}}},
 {t:"Supprimer la conversation",f:async()=>{try{const n=Date.now();await fbj("inbox/"+u.id+"/"+a.id,{m:"PATCH",b:{clr:n,seen:n}});clr=n;ms=[];seen="";paint();toast("Conversation supprimée")}catch(e){toast("Échec")}}},
@@ -1007,6 +1007,40 @@ else if(newer)put(k,x)});
 SYNC_OK=true;TH.a();clearTimeout(SYNC_T);SYNC_T=setTimeout(syncPush,1500);draw()}catch(e){SYNC_OK=false}}
 setInterval(()=>{const a=AU();if(!a){SYNC_UID="";SYNC_OK=false;return}if(SYNC_UID!==a.uid&&Date.now()>SYNC_RETRY){SYNC_UID=a.uid;syncPull().then(()=>{if(!SYNC_OK){SYNC_UID="";SYNC_RETRY=Date.now()+30000}})}},1500);
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&SYNC_OK)syncPush()});
+</script>
+<script>
+/* ===== Messages vocaux + présence de tous les utilisateurs ===== */
+const AUD={};let REC=null,CUR_AUDIO=null,PRES=0;
+const fmtD=d=>{d=+d||0;return Math.floor(d/60)+":"+String(d%60).padStart(2,"0")};
+setInterval(async()=>{const a=AU();if(!a||Date.now()<PRES)return;PRES=Date.now()+300000;try{const pf=PF(),u=me();await fbj("users/"+u.id,{m:"PUT",b:{n:u.n,nl:u.n.toLowerCase(),nat:pf.nat,lrn:pf.lrn,ts:Date.now()}})}catch(e){PRES=Date.now()+30000}},3000);
+const hideRec=()=>{const r=$("#rec");if(r)r.remove()};
+async function recStart(){if(REC)return;let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch(e){return toast("Micro non autorisé")}
+const mt=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported(t))||"";
+const mr=new MediaRecorder(st,mt?{mimeType:mt,audioBitsPerSecond:24000}:{audioBitsPerSecond:24000}),ch=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};
+REC={mr,st,ch,t0:Date.now(),mt:(mr.mimeType||mt||"audio/webm").split(";")[0]};mr.start();
+const d=document.createElement("div");d.id="rec";d.style.cssText="position:fixed;left:12px;right:12px;bottom:calc(84px + max(env(safe-area-inset-bottom,0px),var(--safe-area-inset-bottom,0px)));z-index:120;display:flex;gap:10px;align-items:center;background:var(--cd);border:1px solid var(--bd);border-radius:18px;padding:10px 12px";
+d.innerHTML='<span style="color:#e5484d">●</span><b id="rect">0:00</b><span class="mu" style="flex:1">Enregistrement…</span><button class="ghost" id="rcx" style="width:auto;margin:0">✕</button><button class="red" id="rcs" style="width:auto;margin:0">Envoyer</button>';document.body.appendChild(d);
+$("#rcx").onclick=recCancel;$("#rcs").onclick=recSend;
+REC.iv=setInterval(()=>{if(!REC)return;const s=Math.round((Date.now()-REC.t0)/1000);const t=$("#rect");if(t)t.textContent=fmtD(s);if(cur.v!=="pchat")recCancel();else if(s>=30)recSend()},300)}
+function recCancel(){const R=REC;REC=null;if(!R)return;clearInterval(R.iv);try{R.mr.stop()}catch(e){}R.st.getTracks().forEach(t=>t.stop());hideRec()}
+async function recSend(){const R=REC;if(!R)return;REC=null;clearInterval(R.iv);
+const blob=await new Promise(res=>{R.mr.onstop=()=>res(new Blob(R.ch,{type:R.mt}));try{R.mr.stop()}catch(e){res(new Blob(R.ch,{type:R.mt}))}});
+R.st.getTracks().forEach(t=>t.stop());hideRec();
+const dur=Math.max(1,Math.round((Date.now()-R.t0)/1000)),b64=await new Promise(r=>{const f=new FileReader();f.onload=()=>r(String(f.result).split(",")[1]||"");f.readAsDataURL(blob)});
+if(!b64||b64.length>550000)return toast("Message vocal trop long");
+const u=me(),a=cur.a,rid=RID(u.id,a.id),n=Date.now(),id=n.toString(36)+Math.random().toString(36).slice(2,6),o={},t="🎤 Message vocal";
+o["rooms/"+rid+"/m/"+id]={u:u.id,to:a.id,t,a:1,d:dur,mt:R.mt,ts:n};o["audio/"+rid+"/"+id]=b64;
+o["inbox/"+a.id+"/"+u.id+"/n"]=u.n;o["inbox/"+a.id+"/"+u.id+"/t"]=t;o["inbox/"+a.id+"/"+u.id+"/ts"]=n;
+o["inbox/"+u.id+"/"+a.id+"/n"]=a.n;o["inbox/"+u.id+"/"+a.id+"/t"]=t;o["inbox/"+u.id+"/"+a.id+"/ts"]=n;o["inbox/"+u.id+"/"+a.id+"/seen"]=n;
+try{await fbj("",{m:"PATCH",b:o});if(window.PCR)window.PCR()}catch(e){toast("Message non envoyé")}}
+document.addEventListener("click",e=>{if(e.target.closest("#pmic"))recStart()});
+async function getAud(k,rid){if(AUD[k])return AUD[k];const b=await fbj("audio/"+rid+"/"+k);if(!b)throw 0;return AUD[k]=b}
+async function playMsg(btn,rid){const k=btn.dataset.pl,mt=btn.dataset.mt||"audio/mp4",lab=btn.querySelector("span"),old=lab.textContent;if(CUR_AUDIO){try{CUR_AUDIO.pause()}catch(e){}}
+try{lab.textContent="…";const bin=atob(await getAud(k,rid)),arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+const url=URL.createObjectURL(new Blob([arr],{type:mt})),au=new Audio(url);CUR_AUDIO=au;au.onended=()=>{lab.textContent=old;URL.revokeObjectURL(url)};lab.textContent=old;await au.play()}
+catch(e){lab.textContent=old;toast("Lecture impossible sur cet appareil")}}
+async function transcribe(btn,rid,paint){const k=btn.dataset.tx,mt=btn.dataset.mt||"audio/mp4";btn.textContent="…";
+try{TRM[k]=(await gcall({contents:[{parts:[{inlineData:{mimeType:mt,data:await getAud(k,rid)}},{text:"Transcris ce message audio, puis donne le pinyin si c'est du chinois et la traduction française. Très bref."}]}],generationConfig:{maxOutputTokens:400}})).trim()}catch(e){TRM[k]="Transcription indisponible"}paint()}
 </script>
 <script src="offline.js"></script>
 <script>if("serviceWorker"in navigator&&location.protocol.indexOf("http")===0)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))</script>
